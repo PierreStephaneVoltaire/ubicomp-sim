@@ -19,7 +19,7 @@ let elaspedTime = 0
 let currentMotionState = motionStates.get(1).key
 let currentLightState = lightStates.get(0).key
 
-const client = await MQTT.connectAsync("tcp://10.16.51.55:1883")
+const client = MQTT.connect('mqtt://10.16.51.55:1883')
 
 async function motionCheck(boolLightState){
 
