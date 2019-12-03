@@ -19,10 +19,9 @@ let elaspedTime = 0
 let currentMotionState = motionStates.get(1).key
 let currentLightState = lightStates.get(0).key
 
-async function motionCheck(boolLightState){
-    const client = await MQTT.connectAsync("tcp://10.16.51.55:1883")
+const client = await MQTT.connectAsync("tcp://10.16.51.55:1883")
 
-    
+async function motionCheck(boolLightState){
 
     if(boolLightState == true){
         elaspedTime = 0
@@ -75,6 +74,13 @@ async function motionCheck(boolLightState){
 
 }
 
+client.on('message', function (topic, message) {
+    if (topic === "light_activity") {
+        let content = message.toString()
 
-motionCheck(true)
+        if(content == "ON"){
+            motionCheck(true)
+        }
 
+    }
+}

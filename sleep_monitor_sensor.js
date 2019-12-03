@@ -81,5 +81,5 @@ async function run() {
             process.exit();
         }
     })
-    timer.start(seconds*60*60*8)
+    timer.start(seconds*60)
 }

@@ -36,6 +36,22 @@ async function run() {
                 }
             }
         }
+        else if(topic === "sleep_activity"){
+            let content = JSON.parse(message.toString())
+
+            if(content.states == "Awake"){
+                try {
+                    await client.publish("light_activity", "ON");
+                    // This line doesn't run until the server responds to the publish
+            
+                } catch (e) {
+                    // Do something about it!
+                    console.log(e.stack);
+                    process.exit();
+                }
+            }
+        }
+
     })
 
 
