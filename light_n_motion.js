@@ -4,8 +4,8 @@ const MQTT = require("async-mqtt");
 const timer = new Timer()
 
 var motionStates = new Enum({
-    'OFF': 0, //NO MOTION
-    'ON': 1 //MOTION DETECTED
+    'NO_MOTION': 0, //NO MOTION
+    'MOTION': 1 //MOTION DETECTED
 });
 
 var lightStates = new Enum({
@@ -13,36 +13,39 @@ var lightStates = new Enum({
     'ON': 1
 });
 
-const dataTransferRate=500
+const dataRate=500
 let elaspedTime = 0
 
-let currentMotionState = motionStates.get(0).key
+let currentMotionState = motionStates.get(1).key
 let currentLightState = lightStates.get(0).key
 
 async function motionCheck(boolLightState){
-    const client = await MQTT.connectAsync("tcp://192.168.2.60:1883")
+    const client = await MQTT.connectAsync("tcp://10.16.51.55:1883")
 
     
 
     if(boolLightState == true){
         elaspedTime = 0
-        elaspedTime += dataTransferRate
 
         //light is on, check for user motion
 
         //10 sec consol log every minute
         timer.on('tick', async (dataTransferRate) => {
+            elaspedTime += dataRate
+            
             currentDate = new Date();
 
-            if(elaspedTime == 10000){
+            if(elaspedTime >= 10000){
+                currentMotionState = motionStates.get(0).key
                 currentDataPoint = {
-                    "State": currentMotionState.get(0).key,
+                    "State": currentMotionState,
                     "date": currentDate.toUTCString()
                 }
             }
             else{
+                currentMotionState = motionStates.get(1).key
                 currentDataPoint = {
-                    "State": currentMotionState.get(1).key,
+                    "State": currentMotionState,
                     "date": currentDate.toUTCString()
                 }
                 
@@ -51,7 +54,7 @@ async function motionCheck(boolLightState){
             console.log(currentDataPoint, elaspedTime)
 
             try {
-                await client.publish("motion", JSON.stringify(currentDataPoint));
+                await client.publish("motion_sensor", JSON.stringify(currentDataPoint));
                 // This line doesn't run until the server responds to the publish
         
             } catch (e) {
